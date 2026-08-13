@@ -251,7 +251,11 @@
   # before any Host block. Authentication is via the 1Password SSH agent
   # (IdentityAgent), so there are no key files to declare either.
   #
-  # Copy ~/.ssh/config across by hand — see inventory/ for a snapshot.
+  # Copy ~/.ssh/config across by hand. A snapshot is in
+  # inventory/ssh-config.txt — note that without its `IdentityAgent` line,
+  # SSH cannot reach the 1Password agent, so `git clone git@github.com:...`
+  # fails on a fresh machine. That's a chicken-and-egg: you need it before you
+  # can clone this repo over SSH.
   #
   # programs.ssh = { ... };
 }
