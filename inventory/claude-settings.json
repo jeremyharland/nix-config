@@ -1,0 +1,22 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "npx -y ccstatusline@latest",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "msh-plugin@msh-marketplace": true,
+    "ruby-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "msh-marketplace": {
+      "source": {
+        "source": "git",
+        "url": "git@github.com:get-mosh/engineering-ai-marketplace.git"
+      }
+    }
+  },
+  "theme": "auto",
+  "editorMode": "normal",
+  "model": "opus[1m]"
+}
