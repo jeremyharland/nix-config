@@ -139,7 +139,11 @@
     #   colima                  -> redundant, OrbStack is the container runtime
     #   openvpn, pipenv, python-setuptools
     #                           -> Nix or mise if they turn out to be needed
-    #   tpm                     -> pkgs.tmuxPlugins.tpm if you want it back
+    #   tpm                     -> not needed, and pkgs.tmuxPlugins.tpm does not
+    #                              exist under this nixpkgs pin. tmux plugins are
+    #                              declared in programs.tmux.plugins (home.nix),
+    #                              which wires each plugin's rtp directly — there
+    #                              is no TPM and no `prefix + I` bootstrap.
     #   postgresql@14, @16      -> per-project dev shells (templates/ruby.nix
     #                              declares pkgs.postgresql, which supplies both
     #                              pg_config for native gems and the psql client)
