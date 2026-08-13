@@ -24,20 +24,23 @@
     home = "/Users/${username}";
   };
 
-  # We installed Nix with the Determinate Systems installer, so Determinate
-  # owns the daemon and /etc/nix/nix.conf. Setting this to false stops
-  # nix-darwin fighting it. (Flip to true only if you switch to the official
-  # nixos.org installer.)
-  nix.enable = false;
+  # Nix is installed via Determinate, so Determinate owns the daemon and
+  # /etc/nix/nix.conf. This option comes from `determinate.darwinModules.default`
+  # (wired up in flake.nix) and disables nix-darwin's built-in Nix management
+  # for us — which is why `nix.enable = false` is NOT set here. Setting both is
+  # the old advice; as of Determinate Nix 3.15.2 this option supersedes it.
+  #
+  # If you ever switch to the official nixos.org installer: drop the determinate
+  # input and module, delete this line, and uncomment the nix.* block below.
+  determinateNix.enable = true;
 
   # ---------------------------------------------------------------
   # Nix settings: deliberately NOT managed here.
   # ---------------------------------------------------------------
-  # With `nix.enable = false`, nix-darwin does not write nix.conf, so the
-  # `nix.settings` / `nix.gc` / `nix.optimise` options below would either be
-  # silently inert or trip an assertion depending on nix-darwin's version.
-  # Determinate already enables flakes and nix-command by default and manages
-  # its own GC, so most of this is redundant.
+  # Determinate owns nix.conf, so the `nix.settings` / `nix.gc` /
+  # `nix.optimise` options below would be inert. Determinate already enables
+  # flakes and nix-command by default and manages its own GC, so most of this
+  # is redundant anyway.
   #
   # To add extra substituters under Determinate, put them in
   # /etc/nix/nix.custom.conf (which Determinate leaves alone) instead:

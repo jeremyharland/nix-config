@@ -11,6 +11,18 @@ Inventory captured 2026-08-13 into `inventory/`.
 
 ## Corrections to the README
 
+**Phase 2's Determinate advice is out of date.** Install with the graphical
+`Determinate.pkg` (recommended for nix-darwin users) or:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | \
+  sh -s -- install --determinate
+```
+
+Note the `--determinate` flag — without it you get upstream Nix via their
+installer, not Determinate Nix. Then see the `determinateNix.enable` note
+below; **do not** set `nix.enable = false` as the README instructs.
+
 **There are no SSH keys to copy.** `~/.ssh/` contains only `config` and
 `known_hosts` — no `id_*` files. Authentication and commit signing both go
 through the **1Password SSH agent** (`IdentityAgent` in `~/.ssh/config`,
@@ -79,9 +91,17 @@ OpenJDK 25.0.3 (temurin-25 via mise).
 - **`flake.nix`** — filled in `username`/`system`; replaced the single
   `hostname` with a `mkHost` helper and two `darwinConfigurations` entries so
   the same repo builds on both laptops without editing.
-- **`darwin.nix`** — `nix.enable = false` for the Determinate installer, and
-  the `nix.settings`/`nix.gc`/`nix.optimise` block commented out with a note
-  on where those settings go under Determinate instead.
+- **`flake.nix` / `darwin.nix`** — Determinate integration, done the current
+  way rather than the way the README describes. The README says to set
+  `nix.enable = false`; that advice is now superseded. Determinate ships its
+  own nix-darwin module, so the flake takes a `determinate` input
+  (`https://flakehub.com/f/DeterminateSystems/determinate/3`), adds
+  `determinate.darwinModules.default` to the module list, and `darwin.nix` sets
+  `determinateNix.enable = true`. That option disables nix-darwin's built-in
+  Nix management by itself — **do not also set `nix.enable = false`**. The
+  `nix.settings`/`nix.gc`/`nix.optimise` block is commented out since
+  Determinate owns `nix.conf`.
+  Ref: <https://docs.determinate.systems/guides/nix-darwin/>
 - **`darwin.nix`** — replaced the guessed cask list with the 26 casks actually
   installed, added the three required taps (`homebrew/services`,
   `minio/stable`, `nikitabobko/tap`), and split `brew leaves` into a kept-in-brew

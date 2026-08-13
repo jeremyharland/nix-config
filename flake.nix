@@ -13,9 +13,14 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Determinate's own nix-darwin module. Setting `determinateNix.enable`
+    # (see darwin.nix) turns off nix-darwin's built-in Nix management, which
+    # is what stops the two fighting over the daemon and /etc/nix/nix.conf.
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, ... }:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, determinate, ... }:
     let
       username = "jeremyharland";
       system = "aarch64-darwin"; # "x86_64-darwin" on Intel
@@ -25,6 +30,7 @@
         specialArgs = { inherit username hostname; };
 
         modules = [
+          determinate.darwinModules.default
           ./darwin.nix
 
           home-manager.darwinModules.home-manager
