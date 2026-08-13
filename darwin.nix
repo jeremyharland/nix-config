@@ -196,6 +196,7 @@
       show-recents = false;
       mru-spaces = false;
       tilesize = 36;
+      wvous-br-corner = 14; # bottom-right hot corner → Quick Note
     };
 
     finder = {
@@ -203,6 +204,10 @@
       FXPreferredViewStyle = "Nlsv"; # list view
       ShowPathbar = true;
       ShowStatusBar = true;
+      FXICloudDriveDesktop = false;
+      FXICloudDriveDocuments = false;
+      ShowExternalHardDrivesOnDesktop = true;
+      ShowRemovableMediaOnDesktop = true;
     };
 
     NSGlobalDomain = {
@@ -213,9 +218,24 @@
       NSAutomaticCapitalizationEnabled = false;
       NSAutomaticSpellingCorrectionEnabled = false;
       "com.apple.swipescrolldirection" = false; # natural scroll off
+      AppleICUForce24HourTime = true;
+      AppleMiniaturizeOnDoubleClick = false;
+      "com.apple.trackpad.forceClick" = true;
+      "com.apple.trackpad.scaling" = 1.5;
+      "com.apple.springing.enabled" = true;
+      "com.apple.springing.delay" = 0.5;
     };
 
-    trackpad.Clicking = true;
+    trackpad = {
+      Clicking = true;
+      TrackpadRightClick = true;
+    };
+
+    menuExtraClock = {
+      IsAnalog = true;
+      ShowDate = 0; # 0 = never, 1 = always, 2 = when space allows
+      ShowDayOfWeek = false;
+    };
   };
 
   # Touch ID for sudo. On newer nix-darwin this is the sudo_local form;
