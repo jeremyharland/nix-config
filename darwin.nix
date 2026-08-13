@@ -123,38 +123,37 @@
       "nikitabobko/tap" # aerospace
     ];
 
-    # Kept in Homebrew on purpose: native build deps, iOS/React Native
-    # tooling, and database servers. Everything CLI-shaped that Nix handles
-    # cleanly has moved to home.packages in home.nix instead.
+    # Homebrew keeps only what it is genuinely better at than Nix:
+    # Xcode-coupled tooling and launchd-managed database servers.
+    #
+    # Deliberately NOT here, so the new machine starts clean (all of this was
+    # on the old one — see inventory/brew-leaves.txt if you need to look
+    # something up):
+    #   openjdk@11, openjdk@17  -> mise already has temurin-21/25 and zulu-17
+    #   automake, libffi, openssl@1.1, vips, zlib
+    #                           -> build deps; belong in per-project dev shells
+    #                              (templates/ruby.nix already declares them)
+    #   colima                  -> redundant, OrbStack is the container runtime
+    #   openvpn, pipenv, python-setuptools
+    #                           -> Nix or mise if they turn out to be needed
+    #   tpm                     -> pkgs.tmuxPlugins.tpm if you want it back
+    # Everything CLI-shaped (bat, fzf, gh, jq, ripgrep, neovim, awscli2, ...)
+    # is in home.packages instead.
     brews = [
-      # iOS / React Native — these expect a system Ruby and Xcode layout
+      # iOS / React Native — these expect a system Ruby and Xcode's layout,
+      # which Nix does not provide.
       "cocoapods"
       "fastlane"
       "watchman"
 
-      # Native gem / build dependencies (see the Ruby note in templates/ruby.nix)
-      "automake"
-      "libffi"
-      "openssl@1.1"
-      "vips"
-      "zlib"
-
-      # Databases and services, run via `brew services`
+      # Database servers, run as launchd daemons via `brew services`.
+      # nix-darwin could do this with launchd.user.agents, but there's no
+      # benefit while brew already handles it.
+      # @14 is only here because the old machine had it — drop it once you've
+      # confirmed nothing still needs a v14 data directory.
       "postgresql@14"
       "postgresql@16"
       "redis"
-
-      # JDKs still referenced by PATH in the old .zshrc — project flakes and
-      # mise should own these instead. Drop once nothing depends on them.
-      "openjdk@11"
-      "openjdk@17"
-
-      # Misc that has no clean Nix equivalent on darwin
-      "colima"
-      "openvpn"
-      "pipenv"
-      "python-setuptools"
-      "tpm" # tmux plugin manager
     ];
 
     casks = [

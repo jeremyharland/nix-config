@@ -166,11 +166,84 @@ will restore them, or use VS Code Settings Sync.
 
 ---
 
-## Still to do
+## What Homebrew is still for
 
-- [ ] Install Nix (Determinate) and get `darwin-rebuild switch` green
-- [ ] Copy `~/.ssh/config` and `~/.secrets` to the new machine by hand
-- [ ] Set the new machine's `LocalHostName` to `jeremy-macbook`, or rename the
-      flake entry
-- [ ] Migrate `tools/chartdb` (has a `.nvmrc`) as the first flake conversion
-- [ ] Once the cask list is verified, flip `homebrew.onActivation.cleanup` to `"zap"`
+Only two things, after pruning:
+
+1. **GUI apps** — all 26 casks. nixpkgs' macOS app coverage is patchy and often
+   just repackages the same DMG with worse update handling. This is permanent.
+2. **`brew services`** — postgres and redis as launchd daemons.
+
+Plus `cocoapods` / `fastlane` / `watchman`, which need Xcode's layout.
+
+Everything else that was in `brew leaves` is gone from the config: JDKs go to
+mise or project flakes, native build deps go to per-project dev shells, and the
+CLI tools moved to `home.packages`. The removed formulae are listed in a comment
+in `darwin.nix` and the full original set is in `inventory/brew-leaves.txt`.
+
+**nix-darwin does not install Homebrew.** Install it by hand on the new machine
+first, or the `homebrew` block silently does nothing.
+
+`cleanup` stays at `"none"` so Homebrew never removes anything undeclared. On
+the old machine that means the pruned formulae remain installed but unmanaged —
+harmless. On the new machine they simply never get installed.
+
+---
+
+## New machine runbook
+
+Ordered, and each step assumes the one before it worked.
+
+1. **macOS setup.** Sign in, run Software Update. Do **not** use Migration
+   Assistant — it drags `/opt/homebrew` and stale shims across.
+2. `xcode-select --install`
+3. **Name the machine** so `darwin-rebuild` can find its config:
+   `sudo scutil --set LocalHostName jeremy-macbook`
+   (or rename the `jeremy-macbook` key in `flake.nix` to whatever you pick)
+4. **Install Homebrew** — nix-darwin manages its contents, not its existence:
+   `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+5. **Install 1Password**, sign in, and enable the SSH agent in
+   Settings → Developer. This is what gets you git auth *and* commit signing;
+   there are no key files to copy.
+6. **Install Determinate Nix:**
+   ```bash
+   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | \
+     sh -s -- install --determinate
+   ```
+   Restart the terminal, then check `nix --version`.
+7. **Clone this repo** to `~/nix-config`. The path matters — the `rebuild`
+   alias hardcodes it.
+8. **First switch.** `darwin-rebuild` isn't on PATH yet, so:
+   ```bash
+   nix run nix-darwin#darwin-rebuild -- build --flake ~/nix-config
+   sudo ~/nix-config/result/sw/bin/darwin-rebuild switch --flake ~/nix-config
+   ```
+   Expect the `/etc` guard to fire on `nix.custom.conf` and possibly
+   `sudo_local` — see the gotchas above. After this, `rebuild` works.
+9. **Copy by hand** (secrets and data, not config — they are not in this repo):
+   - `~/.secrets` — sourced by the generated `.zshrc`
+   - `~/.ssh/config` — deliberately unmanaged, see the note in `home.nix`
+   - `~/.config/mise/config.toml` — a snapshot is in `inventory/`
+10. **Re-auth** rather than copy: `aws`, `gcloud`, `kubectl`, `gh auth login`.
+11. **Install mise**, then only the tool versions you actually need. Do not
+    recreate the old machine's 9 Node and 8 pnpm versions.
+12. **Clone repos** into `~/Development` fresh, rather than rsyncing.
+13. **VS Code extensions:** `brew bundle install --file=inventory/Brewfile`
+    restores all 63, or use Settings Sync.
+
+### Then, deliberately and not on day one
+
+- [ ] Convert `tools/chartdb` (has a `.nvmrc`) as the first project flake —
+      validate the pattern on one repo before doing the rest
+- [ ] Add templates for Go / Rust / Python / Terraform as needed
+- [ ] Once the cask list is verified against real use, flip
+      `homebrew.onActivation.cleanup` to `"zap"`
+- [ ] Consider re-enabling `homebrew.onActivation.upgrade` once this is the
+      only machine in use
+- [ ] Drop `postgresql@14` if nothing needs a v14 data directory
+- [ ] `rm -rf ~/.asdf` on the old machine; asdf holds only stale duplicates
+- [ ] Delete the `~/*.pre-nix`, `~/*.hm-backup` and `~/.zshrc.stub-backup`
+      files once you've lived in the new shell for a few days
+- [ ] `~/.zlogin` still sources RVM. home-manager doesn't manage that file, so
+      it survives untouched — but it's dead weight given Ruby comes from mise.
+      Don't copy it to the new machine.

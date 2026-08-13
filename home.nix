@@ -121,10 +121,11 @@
       export ANDROID_HOME="$HOME/Library/Android/sdk"
       export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools"
 
-      # Homebrew keg-only tools that need explicit PATH entries.
-      # Prefer moving these into per-project flakes over time.
+      # postgresql@16 is keg-only, so its client tools (psql, pg_dump) need an
+      # explicit PATH entry. The old .zshrc also added openjdk@11 here; that
+      # formula is no longer declared, so the line is gone — JDKs come from
+      # mise or a project flake now.
       export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
-      export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
 
       # Rails / macOS fork-safety workarounds
       export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
