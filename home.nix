@@ -33,9 +33,14 @@
     gnugrep
     gawk
     neovim
-    tmux
     awscli2
     zoxide # replaces the brew-installed `z`
+
+    # tmuxifier is NOT a tmux plugin in nixpkgs (there is no
+    # tmuxPlugins.tmuxifier) — it is a standalone tool, so it belongs here
+    # rather than in programs.tmux.plugins below. tmux itself is not listed:
+    # programs.tmux adds its own package.
+    tmuxifier
 
     # mise stays. It manages a lot more than language runtimes on this
     # machine (fnox, pitchfork, hk, usage, pkl, vault, age, git-cliff...),
@@ -132,8 +137,10 @@
 
       export BROWSER="/Applications/Firefox.app/Contents/MacOS/firefox"
 
-      # tmuxifier
-      export PATH="$HOME/.config/tmux/plugins/tmuxifier/bin:$PATH"
+      # tmuxifier. The old line prepended
+      # ~/.config/tmux/plugins/tmuxifier/bin to PATH — that directory was a TPM
+      # checkout, and TPM is gone (see programs.tmux). tmuxifier now comes from
+      # home.packages, so it is already on PATH and only needs activating.
       command -v tmuxifier >/dev/null && eval "$(tmuxifier init -)"
 
       # Secrets live outside this repo, on purpose. Not in git.
@@ -168,6 +175,129 @@
   programs.delta = {
     enable = true;
     enableGitIntegration = true;
+  };
+
+  # ---------------------------------------------------------------
+  # tmux — replaces the hand-written ~/.config/tmux/tmux.conf.
+  # ---------------------------------------------------------------
+  # The old config ended with `run '/opt/homebrew/opt/tpm/share/tpm/tpm'`,
+  # i.e. plugins came from TPM via the Homebrew `tpm` formula. That is dropped
+  # here: home-manager wires each plugin's rtp directly, so there is no TPM, no
+  # `brew install tpm` on a new machine, and no `prefix + I` bootstrap step.
+  # Note there is no `tpm` in nixpkgs at all under this pin — neither
+  # `pkgs.tpm` nor `pkgs.tmuxPlugins.tpm` — so the note in darwin.nix about
+  # bringing it back that way does not work.
+  #
+  # ORDERING, which is easy to get wrong: home-manager assembles tmux.conf as
+  #   mkBefore (generated options)  ->  plugins  ->  mkAfter (extraConfig)
+  # so plugins load BEFORE extraConfig. Anything a plugin reads at load time
+  # must go in that plugin's own `extraConfig`, not the top-level one.
+  programs.tmux = {
+    enable = true;
+
+    prefix = "C-Space"; # emits the unbind C-b / set prefix / send-prefix trio
+    mouse = true;
+    keyMode = "vi";
+    baseIndex = 1; # sets both base-index and pane-base-index
+
+    # The old config never set these, which meant tmux-sensible's values took
+    # effect (it only writes when a setting is still at the tmux default).
+    # home-manager writes its own defaults AFTER sensible runs, so leaving
+    # these out would silently regress to escape-time 10 / history-limit 2000.
+    escapeTime = 0;
+    historyLimit = 50000;
+
+    # home-manager defaults this to "screen" (8 colour) — a regression from
+    # what sensible was setting. The terminal-overrides line below adds truecolour.
+    terminal = "screen-256color";
+
+    # Same trap as escapeTime/historyLimit: home-manager writes these AFTER
+    # sensible has run, so its defaults silently undo sensible.
+    #   focusEvents      - sensible sets `focus-events on` unconditionally;
+    #                      home-manager's default would turn it back off, which
+    #                      breaks vim/neovim autoread and FocusGained.
+    #   aggressiveResize - sensible sets it on for non-iTerm terminals
+    #                      (Ghostty/kitty here), home-manager defaults it off.
+    #   clock24          - tmux's own default is 24; home-manager defaults to
+    #                      12, which is a change the old config never asked for.
+    focusEvents = true;
+    aggressiveResize = true;
+    clock24 = true;
+
+    # Loads tmux-sensible first, so every explicit setting here wins over it.
+    # Because of this, `sensible` is deliberately NOT in the plugins list —
+    # listing it as well would run the plugin twice.
+    sensibleOnTop = true;
+
+    plugins = with pkgs.tmuxPlugins; [
+      vim-tmux-navigator
+
+      {
+        # Upstream catppuccin/tmux. The old config used the
+        # dreamsofcode-io/catppuccin-tmux FORK, which is not packaged; the
+        # status bar is styled differently as a result. Flavour must be set
+        # before the plugin loads, hence the per-plugin extraConfig.
+        #
+        # Note the spelling: v2.x renamed this from @catppuccin_flavour to
+        # @catppuccin_flavor. The British spelling is silently ignored — you
+        # still get mocha, but only because that is the packaged default, so
+        # picking any other flavour with the old name would appear to do nothing.
+        plugin = catppuccin;
+        extraConfig = ''
+          set -g @catppuccin_flavor 'mocha'
+        '';
+      }
+
+      # Binds `y` in copy-mode-vi to copy to the macOS system clipboard.
+      # See the note in extraConfig below — do not re-bind `y` there.
+      yank
+    ];
+
+    extraConfig = ''
+      # Truecolour passthrough
+      set-option -sa terminal-overrides ",xterm*:Tc"
+
+      set-option -g renumber-windows on
+
+      # `keyMode = "vi"` above sets BOTH mode-keys and status-keys. The old
+      # config only ever set mode-keys, leaving the command prompt (prefix + :)
+      # on sensible's deliberate emacs bindings. Restored here so prefix + :
+      # keeps behaving the way it does today.
+      set -g status-keys emacs
+
+      # Vim style pane selection
+      bind h select-pane -L
+      bind j select-pane -D
+      bind k select-pane -U
+      bind l select-pane -R
+
+      # Use Alt-arrow keys without prefix key to switch panes
+      bind -n M-Left select-pane -L
+      bind -n M-Right select-pane -R
+      bind -n M-Up select-pane -U
+      bind -n M-Down select-pane -D
+
+      # Shift arrow to switch windows
+      bind -n S-Left  previous-window
+      bind -n S-Right next-window
+
+      # Shift Alt vim keys to switch windows
+      bind -n M-H previous-window
+      bind -n M-L next-window
+
+      # Copy mode. The old config also had
+      #   bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+      # but it sat ABOVE the tpm line, so tmux-yank's `y` (copy to system
+      # clipboard) overrode it. Here extraConfig lands after the plugins, so
+      # re-adding that bind would beat tmux-yank and quietly stop `y` reaching
+      # the macOS clipboard. Left out on purpose — yank owns `y`.
+      bind-key -T copy-mode-vi v send-keys -X begin-selection
+      bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
+
+      # Splits inherit the current pane's directory
+      bind '"' split-window -v -c "#{pane_current_path}"
+      bind % split-window -h -c "#{pane_current_path}"
+    '';
   };
 
   # ---------------------------------------------------------------
