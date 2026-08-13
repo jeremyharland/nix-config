@@ -268,6 +268,11 @@ Ordered, and each step assumes the one before it worked.
    - `~/.secrets` — sourced by the generated `.zshrc`
    - `~/.ssh/config` — deliberately unmanaged, see the note in `home.nix`
    - `~/.config/mise/config.toml` — a snapshot is in `inventory/`
+   - `~/.claude/settings.json` — snapshot in `inventory/claude-settings.json`.
+     Deliberately unmanaged, because Claude Code rewrites this file itself
+     (`/config`, `/model`, plugin installs). The status line will not appear
+     until its `statusLine` block is copied across. The *appearance* of the
+     status line does come from Nix — see `ccstatusline` in `home.nix`.
 10. **Re-auth** rather than copy: `aws`, `gcloud`, `kubectl`, `gh auth login`.
 11. **Install mise**, then only the tool versions you actually need. Do not
     recreate the old machine's 9 Node and 8 pnpm versions.
@@ -288,6 +293,10 @@ Ordered, and each step assumes the one before it worked.
       laptop, `pg_dump` anything you still want out of its `@14`/`@16` data
       directories — a fresh machine will have no way to read them.
 - [ ] `rm -rf ~/.asdf` on the old machine; asdf holds only stale duplicates
+- [ ] `rm ~/.claude/statusline-command.sh` — a hand-rolled bash status line
+      that predates ccstatusline. Nothing references it: `settings.json`
+      points at `npx ccstatusline`. Same for `settings.json.bak` /
+      `settings.json.orig` next to it. Don't copy any of the three across.
 - [ ] Delete the `~/*.pre-nix`, `~/*.hm-backup` and `~/.zshrc.stub-backup`
       files once you've lived in the new shell for a few days
 - [ ] `~/.zlogin` still sources RVM. home-manager doesn't manage that file, so

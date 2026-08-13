@@ -1,5 +1,14 @@
 { pkgs, username, ... }:
 
+let
+  # U+E0B0, the powerline right-facing triangle. Written as a JSON escape and
+  # decoded rather than pasted in as a literal glyph: it is a Private Use Area
+  # codepoint, so it renders as a blank box (or gets silently dropped) in any
+  # editor without a Nerd Font loaded. This way the source stays plain ASCII.
+  powerlineSep = builtins.fromJSON ''"\ue0b0"'';
+
+  jsonFormat = pkgs.formats.json { };
+in
 {
   home.username = username;
   home.homeDirectory = "/Users/${username}";
@@ -368,6 +377,79 @@
     allow_remote_control yes
     background_opacity 0.5
   '';
+
+  # ---------------------------------------------------------------
+  # Claude Code status line (ccstatusline)
+  # ---------------------------------------------------------------
+  # Only the *status line* config is managed here. ~/.claude/settings.json is
+  # deliberately NOT managed — Claude Code writes to it itself (theme,
+  # editorMode, model, enabledPlugins all live there and are rewritten by
+  # /config, /model and plugin installs), so a read-only /nix/store symlink
+  # would break those writes. A snapshot is in inventory/claude-settings.json;
+  # copy the `statusLine` block across by hand on a new machine.
+  #
+  # ccstatusline itself is not in nixpkgs. It stays as `npx -y
+  # ccstatusline@latest`, which resolves node from mise (20.13.1) — consistent
+  # with the "mise stays" decision above, but it does mean the status line is
+  # silently blank until mise is installed and the npx cache is warm.
+  #
+  # TRADE-OFF worth knowing: this file is now a store symlink, so the
+  # `npx ccstatusline` TUI can no longer save changes to it. Edit the attrset
+  # below and `rebuild` instead of using the TUI's config editor.
+  xdg.configFile."ccstatusline/settings.json".source =
+    jsonFormat.generate "ccstatusline-settings.json" {
+      version = 3;
+
+      # Each inner list is one rendered row. The `id` values are ccstatusline's
+      # own widget keys and only need to be unique — the short numeric ones on
+      # row 1 predate the UUIDs it generates now, and are kept as-is rather
+      # than renumbered, so this matches what the TUI last wrote.
+      lines = [
+        [
+          { id = "1"; type = "model"; color = "cyan"; }
+          { id = "3"; type = "context-length"; color = "brightBlack"; }
+          { id = "5"; type = "git-branch"; color = "magenta"; }
+          { id = "7"; type = "git-changes"; color = "yellow"; }
+        ]
+        [
+          { id = "44389939-9675-424f-96ab-347e2fed6d39"; type = "tokens-input"; backgroundColor = "bgBrightMagenta"; }
+          { id = "0a2071df-0612-4d33-9821-40c89811f0fd"; type = "tokens-output"; backgroundColor = "bgBrightCyan"; }
+          { id = "262a13f8-77ef-4552-a2f8-204f547d5f4d"; type = "tokens-total"; backgroundColor = "bgWhite"; }
+        ]
+        [
+          { id = "cc8f1a96-e432-47ae-b414-ae018606e545"; type = "session-usage"; backgroundColor = "bgBlue"; }
+          { id = "05cc4faa-0132-4ba4-b9e0-3ed6a1b26852"; type = "session-cost"; backgroundColor = "bgYellow"; }
+        ]
+      ];
+
+      flexMode = "full-minus-40";
+      compactThreshold = 60;
+      colorLevel = 2; # 2 = 256 colour; the powerline theme below needs >= 2
+      inheritSeparatorColors = false;
+      globalBold = false;
+      gitCacheTtlSeconds = 5;
+      minimalistMode = false;
+      defaultPadding = " ";
+
+      powerline = {
+        enabled = true;
+        separators = [ powerlineSep ];
+        separatorInvertBackground = [ false ];
+        startCaps = [ ];
+        endCaps = [ ];
+        autoAlign = false;
+        continueThemeAcrossLines = false;
+        theme = "nord-aurora";
+      };
+
+      # ccstatusline records how it was installed so it knows whether it may
+      # self-update. Carried over verbatim: changing it would make the tool
+      # try to rewrite this now-read-only file on the next launch.
+      installation = {
+        method = "auto-update";
+        packageManager = "npm";
+      };
+    };
 
   # ---------------------------------------------------------------
   # Git — mirrors the old ~/.gitconfig, including 1Password SSH signing.
