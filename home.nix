@@ -102,6 +102,9 @@
 
       # --- carried over from the old .zshrc ---
 
+      # Locally-installed binaries (mise lives here, among others)
+      export PATH="$HOME/.local/bin:$PATH"
+
       # Android SDK
       export ANDROID_HOME="$HOME/Library/Android/sdk"
       export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools"

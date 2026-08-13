@@ -87,8 +87,15 @@
     enable = true;
 
     onActivation = {
-      autoUpdate = true;
-      upgrade = true;
+      # Both deliberately off. With them on, every `darwin-rebuild switch`
+      # upgrades all 42 formulae and 27 casks — including postgresql@14/@16,
+      # where a major bump can leave existing data directories unreadable.
+      # Not something to trigger implicitly on a machine you depend on.
+      # Run `brew upgrade` by hand when you actually want it; consider
+      # turning these on once the new machine is the only one in use.
+      autoUpdate = false;
+      upgrade = false;
+
       # "zap" removes anything not listed here. Left at "none" until this
       # list has been verified against a real build — see README Phase 5.
       cleanup = "none";
