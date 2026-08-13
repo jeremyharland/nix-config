@@ -151,34 +151,18 @@
     #                              or a container via OrbStack
     # Everything CLI-shaped (bat, fzf, gh, jq, ripgrep, neovim, awscli2, ...)
     # is in home.packages instead.
-    brews = [
-      # iOS / React Native — these expect a system Ruby and Xcode's layout,
-      # which Nix does not provide.
-      "cocoapods"
-      "fastlane"
-      "watchman"
-
-      # redis as a launchd daemon via `brew services`. nix-darwin could do this
-      # with launchd.user.agents, but there's no benefit while brew handles it.
-      "redis"
-    ];
 
     casks = [
       "1password"
       "1password-cli"
-      "android-studio"
       "bruno"
       "chromium"
       "dbeaver-community"
       "figma"
-      "firefox"
       "font-hack-nerd-font"
       "ghostty"
       "intellij-idea"
-      "iterm2"
-      "kitty"
       "maccy"
-      "ngrok"
       "orbstack" # Docker/K8s runtime — replaces Docker Desktop
       "postman"
       "rectangle"
@@ -188,9 +172,6 @@
       "visual-studio-code"
       "vlc"
       "wireshark-app"
-      "zulu@17"
-      # "wireshark" — legacy name, superseded by wireshark-app. Both were
-      # installed on the old machine; only install one on the new one.
     ];
 
     masApps = {
