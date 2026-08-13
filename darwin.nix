@@ -91,6 +91,7 @@
   ];
 
   programs.zsh.enable = true; # needed so nix paths land in your shell
+  programs.zsh.enableCompletion = false; # oh-my-zsh handles compinit and respects ZSH_DISABLE_COMPFIX
 
   # ---------------------------------------------------------------
   # Homebrew — declarative, for GUI apps and things Nix does badly

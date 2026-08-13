@@ -65,6 +65,13 @@
     syntaxHighlighting.enable = true;
     enableCompletion = true;
 
+    # Must be set before oh-my-zsh is sourced (.zshenv loads before .zshrc).
+    # Without this, compinit warns about insecure Nix store paths in $fpath
+    # and prompts interactively on every new terminal.
+    envExtra = ''
+      ZSH_DISABLE_COMPFIX=true
+    '';
+
     # Carried over from the old .zshrc. Note that zsh-autosuggestions and
     # zsh-syntax-highlighting are NOT listed as oh-my-zsh plugins here —
     # the two options above already provide them from nixpkgs.
@@ -244,7 +251,11 @@
         # picking any other flavour with the old name would appear to do nothing.
         plugin = catppuccin;
         extraConfig = ''
-          set -g @catppuccin_flavor 'mocha'
+          # Match macOS system appearance at startup / config reload.
+          # The hook in extraConfig re-applies this automatically on focus.
+          if-shell "defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q Dark" \
+            'set -g @catppuccin_flavor "mocha"' \
+            'set -g @catppuccin_flavor "latte"'
         '';
       }
 
@@ -258,6 +269,8 @@
       set-option -sa terminal-overrides ",xterm*:Tc"
 
       set-option -g renumber-windows on
+
+      bind r source-file ~/.config/tmux/tmux.conf \; display "config reloaded"
 
       # `keyMode = "vi"` above sets BOTH mode-keys and status-keys. The old
       # config only ever set mode-keys, leaving the command prompt (prefix + :)
@@ -297,6 +310,11 @@
       # Splits inherit the current pane's directory
       bind '"' split-window -v -c "#{pane_current_path}"
       bind % split-window -h -c "#{pane_current_path}"
+
+      # Re-sync catppuccin flavor to macOS appearance whenever tmux gains focus.
+      # The script is written by home.file below; it only re-sources catppuccin
+      # when the appearance has actually changed, so it's cheap on every focus.
+      set-hook -g client-focus-in "run-shell ~/.config/tmux/theme-sync.sh"
     '';
   };
 
@@ -310,6 +328,9 @@
   #
   # Ghostty on macOS reads its config from Application Support, not ~/.config —
   # which is why this was missed by the original inventory sweep.
+  # Suppresses the "Last login: ..." banner macOS prints on every new terminal.
+  home.file.".hushlogin".text = "";
+
   home.file."Library/Application Support/com.mitchellh.ghostty/config".text = ''
     # Follow the macOS system appearance. Run `ghostty +list-themes` to browse,
     # or `ghostty +show-config` to check what's actually loaded.
@@ -318,6 +339,28 @@
     # Match the window chrome (titlebar, tab bar) to the system appearance too.
     window-theme = auto
   '';
+
+  # Syncs the catppuccin tmux flavor to the macOS system appearance.
+  # Called via the client-focus-in hook in programs.tmux.extraConfig above.
+  # The nix store path for catppuccin_tmux.conf is interpolated at build time
+  # so the script always references the currently-active generation's plugin.
+  home.file.".config/tmux/theme-sync.sh" = {
+    executable = true;
+    text =
+      let
+        catppuccinConf = "${pkgs.tmuxPlugins.catppuccin}/share/tmux-plugins/catppuccin/catppuccin_tmux.conf";
+      in
+      ''
+        #!/usr/bin/env bash
+        appearance=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+        if [ "$appearance" = "Dark" ]; then flavor="mocha"; else flavor="latte"; fi
+        current=$(tmux show-option -gv @catppuccin_flavor 2>/dev/null)
+        if [ "$current" != "$flavor" ]; then
+          tmux set -g @catppuccin_flavor "$flavor"
+          tmux source "${catppuccinConf}"
+        fi
+      '';
+  };
 
   # kitty is barely used, but this preserves the old config rather than losing it.
   xdg.configFile."kitty/kitty.conf".text = ''
