@@ -151,21 +151,34 @@
     enableZshIntegration = true;
   };
 
+  # Nicer git diffs. Set explicitly rather than via the old
+  # `programs.git.delta.enable`, whose implicit git integration is deprecated.
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+  };
+
   # ---------------------------------------------------------------
   # Git — mirrors the old ~/.gitconfig, including 1Password SSH signing.
   # ---------------------------------------------------------------
   programs.git = {
     enable = true;
-    userName = "jeremyharland";
-    userEmail = "jeremy.harland@gmail.com";
 
-    delta.enable = true;
+    # Single `settings` attrset — home-manager renamed userName / userEmail /
+    # extraConfig into this. Keys map straight onto git config sections.
+    settings = {
+      user = {
+        name = "jeremyharland";
+        email = "jeremy.harland@gmail.com";
 
-    aliases = {
-      lg = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
-    };
+        # Commit signing via the 1Password SSH agent. This is a PUBLIC key —
+        # the private half never leaves 1Password, which is why there is
+        # nothing in ~/.ssh to copy to the new machine.
+        signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINfguAGDkLgRwurmbo/fS5+A7rXVCK5mkuJX6tfiH3PD";
+      };
 
-    extraConfig = {
+      alias.lg = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
+
       init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;
@@ -173,13 +186,11 @@
       fetch.prune = true;
       diff.colorMoved = "default";
 
-      # Commit signing via the 1Password SSH agent. The signing key is a
-      # PUBLIC key — the private half never leaves 1Password, which is why
-      # there is nothing in ~/.ssh to copy to the new machine.
-      user.signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINfguAGDkLgRwurmbo/fS5+A7rXVCK5mkuJX6tfiH3PD";
       commit.gpgsign = true;
-      gpg.format = "ssh";
-      "gpg \"ssh\"".program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+      gpg = {
+        format = "ssh";
+        ssh.program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+      };
     };
 
     ignores = [
