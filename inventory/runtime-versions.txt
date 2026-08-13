@@ -1,3 +1,0 @@
-v20.13.1
-ruby 3.3.3 (2024-06-12 revision f1c7b6f435) [arm64-darwin23]
-openjdk version "25.0.3" 2026-04-21 LTS

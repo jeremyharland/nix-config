@@ -169,7 +169,6 @@
       "intellij-idea"
       "maccy"
       "orbstack" # Docker/K8s runtime — replaces Docker Desktop
-      "postman"
       "notion"
       "rectangle"
       "signal"
