@@ -1,0 +1,4 @@
+/Users/jeremyharland/.local/share/mise/installs/node/20.13.1/lib
+├── corepack@0.28.0
+└── npm@10.5.2
+
