@@ -51,6 +51,8 @@ in
     # programs.tmux adds its own package.
     tmuxifier
 
+    pgcli
+
     # mise stays. It manages a lot more than language runtimes on this
     # machine (fnox, pitchfork, hk, usage, pkl, vault, age, git-cliff...),
     # much of which has no nixpkgs equivalent. See MACHINE-NOTES.md.
