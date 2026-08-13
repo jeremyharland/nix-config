@@ -94,6 +94,18 @@
       update = "nix flake update --flake ~/nix-config";
     };
 
+    # Becomes ~/.zprofile, which home-manager takes over. These two lines were
+    # in the pre-Nix ~/.zprofile — the OrbStack one in particular is easy to
+    # lose, and losing it breaks the `orb`/`docker` CLI integration. Login
+    # shells that aren't interactive never read .zshrc, so brew shellenv is
+    # repeated here on purpose rather than only in initContent.
+    profileExtra = ''
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+
+      # Added by OrbStack: command-line tools and integration
+      source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+    '';
+
     initContent = ''
       # Homebrew on Apple Silicon
       if [ -x /opt/homebrew/bin/brew ]; then
@@ -199,6 +211,9 @@
       ".envrc.local"
       "result"
       "result-*"
+
+      # Carried over from the pre-Nix ~/.config/git/ignore
+      "**/.claude/settings.local.json"
     ];
   };
 

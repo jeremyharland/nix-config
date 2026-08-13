@@ -40,6 +40,12 @@
               useUserPackages = true;
               extraSpecialArgs = { inherit username; };
               users.${username} = import ./home.nix;
+
+              # Rather than aborting when a pre-Nix dotfile is in the way,
+              # move it aside to <name>.hm-backup. Without this the first
+              # activation fails on every hand-written file it wants to own
+              # (.zprofile, .config/git/ignore, ...) one error at a time.
+              backupFileExtension = "hm-backup";
             };
           }
         ];
