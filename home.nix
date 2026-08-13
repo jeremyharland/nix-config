@@ -1,4 +1,4 @@
-{ pkgs, username, ... }:
+{ pkgs, lib, username, ... }:
 
 let
   # U+E0B0, the powerline right-facing triangle. Written as a JSON escape and
@@ -76,21 +76,13 @@ in
     syntaxHighlighting.enable = true;
     enableCompletion = true;
 
-    # Must be set before oh-my-zsh is sourced (.zshenv loads before .zshrc).
-    # Without this, compinit warns about insecure Nix store paths in $fpath
-    # and prompts interactively on every new terminal.
-    envExtra = ''
-      ZSH_DISABLE_COMPFIX=true
-    '';
-
-    # Carried over from the old .zshrc. Note that zsh-autosuggestions and
-    # zsh-syntax-highlighting are NOT listed as oh-my-zsh plugins here —
-    # the two options above already provide them from nixpkgs.
-    oh-my-zsh = {
-      enable = true;
-      theme = ""; # empty: starship owns the prompt
-      plugins = [ "git" ];
-    };
+    plugins = [
+      {
+        name = "powerlevel10k";
+        src = pkgs.zsh-powerlevel10k;
+        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+      }
+    ];
 
     history = {
       size = 50000;
@@ -129,54 +121,62 @@ in
       source ~/.orbstack/shell/init.zsh 2>/dev/null || :
     '';
 
-    initContent = ''
-      # Homebrew on Apple Silicon
-      if [ -x /opt/homebrew/bin/brew ]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-      fi
+    initContent = lib.mkMerge [
+      # Instant prompt must be first — before plugins produce any output.
+      (lib.mkBefore ''
+        if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+          source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+        fi
+      '')
+      ''
+        # Homebrew on Apple Silicon
+        if [ -x /opt/homebrew/bin/brew ]; then
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+        fi
 
-      # --- carried over from the old .zshrc ---
+        # --- carried over from the old .zshrc ---
 
-      # Locally-installed binaries (mise lives here, among others)
-      export PATH="$HOME/.local/bin:$PATH"
+        # Locally-installed binaries (mise lives here, among others)
+        export PATH="$HOME/.local/bin:$PATH"
 
-      # Android SDK
-      export ANDROID_HOME="$HOME/Library/Android/sdk"
-      export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools"
+        # Android SDK
+        export ANDROID_HOME="$HOME/Library/Android/sdk"
+        export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools"
 
-      # The old .zshrc prepended keg-only Homebrew paths for postgresql@16 and
-      # openjdk@11 here. Neither formula is declared any more, so both lines
-      # are gone: JDKs come from mise or a project flake, and psql/pg_config
-      # come from pkgs.postgresql in a project dev shell.
+        # The old .zshrc prepended keg-only Homebrew paths for postgresql@16 and
+        # openjdk@11 here. Neither formula is declared any more, so both lines
+        # are gone: JDKs come from mise or a project flake, and psql/pg_config
+        # come from pkgs.postgresql in a project dev shell.
 
-      # Rails / macOS fork-safety workarounds
-      export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-      export DISABLE_SPRING=1
+        # Rails / macOS fork-safety workarounds
+        export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+        export DISABLE_SPRING=1
 
-      export BROWSER="/Applications/Firefox.app/Contents/MacOS/firefox"
+        export BROWSER="/Applications/Firefox.app/Contents/MacOS/firefox"
 
-      # tmuxifier. The old line prepended
-      # ~/.config/tmux/plugins/tmuxifier/bin to PATH — that directory was a TPM
-      # checkout, and TPM is gone (see programs.tmux). tmuxifier now comes from
-      # home.packages, so it is already on PATH and only needs activating.
-      command -v tmuxifier >/dev/null && eval "$(tmuxifier init -)"
+        # tmuxifier. The old line prepended
+        # ~/.config/tmux/plugins/tmuxifier/bin to PATH — that directory was a TPM
+        # checkout, and TPM is gone (see programs.tmux). tmuxifier now comes from
+        # home.packages, so it is already on PATH and only needs activating.
+        command -v tmuxifier >/dev/null && eval "$(tmuxifier init -)"
 
-      # Secrets live outside this repo, on purpose. Not in git.
-      [ -f ~/.secrets ] && source ~/.secrets
+        # Secrets live outside this repo, on purpose. Not in git.
+        [ -f ~/.secrets ] && source ~/.secrets
 
-      # mise, then the tools mise installs that need shell activation.
-      command -v mise >/dev/null && eval "$(mise activate zsh)"
-      # NOTE: the old .zshrc said `fnox activate bash` inside zsh. Preserved
-      # verbatim in case that was deliberate — switch to zsh if it wasn't.
-      command -v fnox >/dev/null && eval "$(fnox activate bash)"
-      command -v pitchfork >/dev/null && eval "$(pitchfork activate zsh)"
-    '';
+        # mise, then the tools mise installs that need shell activation.
+        command -v mise >/dev/null && eval "$(mise activate zsh)"
+        # NOTE: the old .zshrc said `fnox activate bash` inside zsh. Preserved
+        # verbatim in case that was deliberate — switch to zsh if it wasn't.
+        command -v fnox >/dev/null && eval "$(fnox activate bash)"
+        command -v pitchfork >/dev/null && eval "$(pitchfork activate zsh)"
+
+        # Load Powerlevel10k config. Run `p10k configure` to (re)generate ~/.p10k.zsh.
+        [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+      ''
+    ];
   };
 
-  programs.starship = {
-    enable = true;
-    enableZshIntegration = true;
-  };
+
 
   programs.fzf = {
     enable = true;

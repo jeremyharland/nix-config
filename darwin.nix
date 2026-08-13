@@ -93,7 +93,7 @@
   documentation.enable = false;
 
   programs.zsh.enable = true; # needed so nix paths land in your shell
-  programs.zsh.enableCompletion = false; # oh-my-zsh handles compinit and respects ZSH_DISABLE_COMPFIX
+  programs.zsh.enableCompletion = false; # home-manager's programs.zsh handles compinit; this prevents double init
 
   # ---------------------------------------------------------------
   # Homebrew — declarative, for GUI apps and things Nix does badly
