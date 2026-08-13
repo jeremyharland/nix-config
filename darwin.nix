@@ -42,19 +42,28 @@
   determinateNix.enable = true;
 
   # ---------------------------------------------------------------
-  # Nix settings: deliberately NOT managed here.
+  # Nix settings — via Determinate, not nix-darwin's `nix.settings`.
   # ---------------------------------------------------------------
-  # Determinate owns nix.conf, so the `nix.settings` / `nix.gc` /
-  # `nix.optimise` options below would be inert. Determinate already enables
-  # flakes and nix-command by default and manages its own GC, so most of this
-  # is redundant anyway.
+  # Determinate owns /etc/nix/nix.conf (the module even does
+  # `nix.enable = lib.mkForce false` for us), so nix-darwin's `nix.settings` /
+  # `nix.gc` / `nix.optimise` are inert here. Custom settings go through
+  # `determinateNix.customSettings`, which the module renders into
+  # /etc/nix/nix.custom.conf — don't hand-edit that file, it gets overwritten.
   #
-  # To add extra substituters under Determinate, put them in
-  # /etc/nix/nix.custom.conf (which Determinate leaves alone) instead:
+  # Determinate already turns on nix-command and flakes and manages its own GC,
+  # so all that's left from the original nix.settings block is the community
+  # binary cache.
   #
-  #   extra-substituters = https://nix-community.cachix.org
-  #   extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
-  #
+  # A few keys are rejected here by design: bash-prompt-prefix,
+  # external-builders, extra-nix-path, netrc-file, ssl-cert-file and
+  # upgrade-nix-store-path-url are all Determinate-owned.
+  determinateNix.customSettings = {
+    extra-substituters = [ "https://nix-community.cachix.org" ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+  };
+
   # nix.settings = {
   #   experimental-features = [ "nix-command" "flakes" ];
   #   trusted-users = [ "root" username ];

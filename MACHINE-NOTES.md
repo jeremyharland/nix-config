@@ -133,6 +133,29 @@ it in place and your Nix git config is silently ignored.
 **`~/.oh-my-zsh` is a git checkout.** home-manager's `oh-my-zsh` module uses
 the nixpkgs copy instead. Once the build works, `rm -rf ~/.oh-my-zsh`.
 
+**"Unexpected files in /etc, aborting activation."** The first `switch` stops
+on `/etc/nix/nix.custom.conf` and `/etc/pam.d/sudo_local`. Both are safe to
+rename — checked before doing so:
+
+- `nix.custom.conf` was written by the Determinate installer and contained only
+  comments. nix-darwin takes it over via `determinateNix.customSettings`.
+- `sudo_local` was hand-created 16 Jul 2024 (pre-dates all of this) and holds
+  exactly `auth sufficient pam_tid.so` — the same line
+  `security.pam.services.sudo_local.touchIdAuth = true` generates, so Touch ID
+  for sudo survives.
+
+```bash
+sudo mv /etc/nix/nix.custom.conf /etc/nix/nix.custom.conf.before-nix-darwin
+sudo mv /etc/pam.d/sudo_local /etc/pam.d/sudo_local.before-nix-darwin
+```
+
+**Custom Nix settings go in `determinateNix.customSettings`**, not
+`nix.settings` and not by hand-editing `/etc/nix/nix.custom.conf` (which is
+regenerated). The module force-disables `nix.enable` itself. These keys are
+rejected by design, being Determinate-owned: `bash-prompt-prefix`,
+`external-builders`, `extra-nix-path`, `netrc-file`, `ssl-cert-file`,
+`upgrade-nix-store-path-url`.
+
 **`pkgs.watch` may not exist** under that attribute name (it's part of
 `procps`). It was inherited from the original config and has not been
 evaluated. If the first build complains, drop the line.
