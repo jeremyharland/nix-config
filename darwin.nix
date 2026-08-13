@@ -117,12 +117,14 @@
       cleanup = "none";
     };
 
-    taps = [
-      "homebrew/services"
-      "minio/stable"
-      # nikitabobko/tap dropped along with aerospace — it existed only to
-      # provide that cask.
-    ];
+    # No taps needed. All three the old machine had are gone:
+    #   homebrew/services  merged into Homebrew core years ago; `brew tap-info`
+    #                      reports "No commands/casks/formulae" for it, and
+    #                      `brew services` works as a built-in command
+    #   minio/stable       orphaned — the tap was present but nothing was ever
+    #                      installed from it
+    #   nikitabobko/tap    existed only to provide the aerospace cask
+    taps = [ ];
 
     # Homebrew keeps only what it is genuinely better at than Nix:
     # Xcode-coupled tooling and launchd-managed database servers.
