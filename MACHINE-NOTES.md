@@ -197,6 +197,43 @@ harmless. On the new machine they simply never get installed.
 
 ---
 
+## GUI app config the first inventory missed
+
+Phase 0 captured shell config and `~/.config`, and stopped there. That missed
+app configuration living in macOS-specific locations. Found afterwards, when
+the new machine's terminal came up unthemed:
+
+| What | Where | Status |
+|---|---|---|
+| Ghostty theme | `~/Library/Application Support/com.mitchellh.ghostty/config` | now in `home.nix` |
+| kitty | `~/.config/kitty/kitty.conf` | now in `home.nix` |
+| iTerm2 | `~/Library/Preferences/com.googlecode.iterm2.plist` | **copy by hand** — binary plist |
+| nvim | `~/.config/nvim` — an NvChad checkout | **clone separately** |
+| Hack Nerd Font | `font-hack-nerd-font` cask | already declared |
+
+Ghostty's theme is `light:Catppuccin Latte,dark:Catppuccin Mocha` with
+`window-theme = auto`, i.e. it follows the macOS light/dark setting.
+
+Note that `programs.ghostty` and `programs.kitty` are deliberately **not** used:
+both install their own copy of the terminal from nixpkgs, which would duplicate
+the cask. The config files are written directly instead — and for Ghostty via
+`home.file` rather than `xdg.configFile`, because on macOS it reads from
+Application Support.
+
+**The prompt was never lost.** The old `.zshrc` set
+`ZSH_THEME="robbyrussell"` at line 11 but then ran `starship init zsh` at line
+123, *after* sourcing oh-my-zsh — so starship always won and robbyrussell never
+rendered. There is no `~/.config/starship.toml`, so it was stock starship. The
+Nix config reproduces that exactly, which is why `oh-my-zsh.theme = ""` changes
+nothing visible. To actually use robbyrussell you would have to set
+`programs.starship.enable = false` and `oh-my-zsh.theme = "robbyrussell"`.
+
+If anything else looks wrong on the new machine, check macOS-specific paths
+before assuming the Nix config is at fault: `~/Library/Application Support/`,
+`~/Library/Preferences/`.
+
+---
+
 ## New machine runbook
 
 Ordered, and each step assumes the one before it worked.

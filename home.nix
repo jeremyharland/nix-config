@@ -171,6 +171,32 @@
   };
 
   # ---------------------------------------------------------------
+  # Terminal appearance
+  # ---------------------------------------------------------------
+  # Both terminals are installed as casks (darwin.nix), so only their config is
+  # managed here. Deliberately NOT using programs.ghostty / programs.kitty:
+  # those modules install their own copy of the terminal from nixpkgs, which
+  # would sit alongside the cask.
+  #
+  # Ghostty on macOS reads its config from Application Support, not ~/.config —
+  # which is why this was missed by the original inventory sweep.
+  home.file."Library/Application Support/com.mitchellh.ghostty/config".text = ''
+    # Follow the macOS system appearance. Run `ghostty +list-themes` to browse,
+    # or `ghostty +show-config` to check what's actually loaded.
+    theme = light:Catppuccin Latte,dark:Catppuccin Mocha
+
+    # Match the window chrome (titlebar, tab bar) to the system appearance too.
+    window-theme = auto
+  '';
+
+  # kitty is barely used, but this preserves the old config rather than losing it.
+  xdg.configFile."kitty/kitty.conf".text = ''
+    dynamic_background_opacity yes
+    allow_remote_control yes
+    background_opacity 0.5
+  '';
+
+  # ---------------------------------------------------------------
   # Git — mirrors the old ~/.gitconfig, including 1Password SSH signing.
   # ---------------------------------------------------------------
   programs.git = {
