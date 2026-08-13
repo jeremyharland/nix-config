@@ -137,6 +137,10 @@
     #   openvpn, pipenv, python-setuptools
     #                           -> Nix or mise if they turn out to be needed
     #   tpm                     -> pkgs.tmuxPlugins.tpm if you want it back
+    #   postgresql@14, @16      -> per-project dev shells (templates/ruby.nix
+    #                              declares pkgs.postgresql, which supplies both
+    #                              pg_config for native gems and the psql client)
+    #                              or a container via OrbStack
     # Everything CLI-shaped (bat, fzf, gh, jq, ripgrep, neovim, awscli2, ...)
     # is in home.packages instead.
     brews = [
@@ -146,13 +150,8 @@
       "fastlane"
       "watchman"
 
-      # Database servers, run as launchd daemons via `brew services`.
-      # nix-darwin could do this with launchd.user.agents, but there's no
-      # benefit while brew already handles it.
-      # @14 is only here because the old machine had it — drop it once you've
-      # confirmed nothing still needs a v14 data directory.
-      "postgresql@14"
-      "postgresql@16"
+      # redis as a launchd daemon via `brew services`. nix-darwin could do this
+      # with launchd.user.agents, but there's no benefit while brew handles it.
       "redis"
     ];
 

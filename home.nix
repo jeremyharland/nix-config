@@ -121,11 +121,10 @@
       export ANDROID_HOME="$HOME/Library/Android/sdk"
       export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools"
 
-      # postgresql@16 is keg-only, so its client tools (psql, pg_dump) need an
-      # explicit PATH entry. The old .zshrc also added openjdk@11 here; that
-      # formula is no longer declared, so the line is gone — JDKs come from
-      # mise or a project flake now.
-      export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
+      # The old .zshrc prepended keg-only Homebrew paths for postgresql@16 and
+      # openjdk@11 here. Neither formula is declared any more, so both lines
+      # are gone: JDKs come from mise or a project flake, and psql/pg_config
+      # come from pkgs.postgresql in a project dev shell.
 
       # Rails / macOS fork-safety workarounds
       export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES

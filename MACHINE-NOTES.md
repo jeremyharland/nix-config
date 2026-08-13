@@ -168,13 +168,20 @@ will restore them, or use VS Code Settings Sync.
 
 ## What Homebrew is still for
 
-Only two things, after pruning:
+Very little, after pruning — `brews` is down to four:
 
 1. **GUI apps** — all 26 casks. nixpkgs' macOS app coverage is patchy and often
-   just repackages the same DMG with worse update handling. This is permanent.
-2. **`brew services`** — postgres and redis as launchd daemons.
+   just repackages the same DMG with worse update handling. This is permanent,
+   and is the main reason Homebrew stays at all.
+2. **`cocoapods` / `fastlane` / `watchman`** — need a system Ruby and Xcode's
+   directory layout, which Nix doesn't provide.
+3. **`redis`** — as a launchd daemon via `brew services`.
 
-Plus `cocoapods` / `fastlane` / `watchman`, which need Xcode's layout.
+Postgres is deliberately **not** here. `psql` and `pg_config` come from
+`pkgs.postgresql` in a per-project dev shell (`templates/ruby.nix` already
+declares it), or run the server in a container via OrbStack. This is the
+guiding principle applied honestly: if it's a project dependency, it belongs to
+the project, not the machine.
 
 Everything else that was in `brew leaves` is gone from the config: JDKs go to
 mise or project flakes, native build deps go to per-project dev shells, and the
@@ -240,7 +247,9 @@ Ordered, and each step assumes the one before it worked.
       `homebrew.onActivation.cleanup` to `"zap"`
 - [ ] Consider re-enabling `homebrew.onActivation.upgrade` once this is the
       only machine in use
-- [ ] Drop `postgresql@14` if nothing needs a v14 data directory
+- [ ] Postgres is no longer installed machine-wide. Before retiring the old
+      laptop, `pg_dump` anything you still want out of its `@14`/`@16` data
+      directories — a fresh machine will have no way to read them.
 - [ ] `rm -rf ~/.asdf` on the old machine; asdf holds only stale duplicates
 - [ ] Delete the `~/*.pre-nix`, `~/*.hm-backup` and `~/.zshrc.stub-backup`
       files once you've lived in the new shell for a few days
