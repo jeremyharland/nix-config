@@ -16,8 +16,15 @@
   # this option won't exist — delete the line if evaluation complains.
   system.primaryUser = username;
 
+  # hostName drives LocalHostName, which is what `darwin-rebuild switch` matches
+  # against to pick a darwinConfigurations entry — so this must stay in sync
+  # with the keys in flake.nix.
   networking.hostName = hostname;
-  networking.computerName = hostname;
+
+  # computerName deliberately left unmanaged: this machine is "Jeremy's MacBook
+  # Pro (2)" in Finder/AirDrop and there's no reason to flatten that to the
+  # hostname form.
+  # networking.computerName = hostname;
 
   users.users.${username} = {
     name = username;
