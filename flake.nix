@@ -52,18 +52,18 @@
       };
     in
     {
-      # `darwin-rebuild switch --flake ~/nix-config` selects the entry matching
-      # `scutil --get LocalHostName`. Both machines are defined here so the same
-      # repo builds on either one without editing.
-      darwinConfigurations = {
-        # Current machine — the one being migrated away from.
-        "Jeremys-MacBook-Pro-2" = mkHost "Jeremys-MacBook-Pro-2";
-
-        # New MacBook. Either rename this key to match its LocalHostName, or
-        # set the new machine's name to this and it will just work:
-        #   sudo scutil --set LocalHostName jeremy-macbook
-        "jeremy-macbook" = mkHost "jeremy-macbook";
-      };
+      # `darwin-rebuild switch --flake ~/nix-config` selects the entry whose name
+      # matches `scutil --get LocalHostName`. Every machine that should build
+      # this config just needs its LocalHostName listed here — they all get the
+      # identical configuration, so adding one is a one-line change.
+      #
+      # If a host is missing you get:
+      #   error: flake ... does not provide attribute
+      #          'darwinConfigurations.<name>.system'
+      darwinConfigurations = nixpkgs.lib.genAttrs [
+        "Jeremys-MacBook-Pro-2" # old machine, being migrated away from
+        "Jeremys-MacBook-Pro-3" # new machine (macOS assigned this name itself)
+      ] mkHost;
 
       # Convenience so `nix fmt` and `nix flake check` behave
       formatter.${system} = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
