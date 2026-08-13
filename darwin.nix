@@ -120,7 +120,8 @@
     taps = [
       "homebrew/services"
       "minio/stable"
-      "nikitabobko/tap" # aerospace
+      # nikitabobko/tap dropped along with aerospace — it existed only to
+      # provide that cask.
     ];
 
     # Homebrew keeps only what it is genuinely better at than Nix:
@@ -158,7 +159,6 @@
     casks = [
       "1password"
       "1password-cli"
-      "aerospace"
       "android-studio"
       "bruno"
       "chromium"
