@@ -52,6 +52,7 @@ in
     tmuxifier
 
     pgcli
+    postgresql
 
     # mise stays. It manages a lot more than language runtimes on this
     # machine (fnox, pitchfork, hk, usage, pkl, vault, age, git-cliff...),
@@ -107,10 +108,6 @@ in
       vim = "nvim";
       pn = "pnpm";
 
-      # Directory traversal
-      ".." = "cd ..";
-      "..." = "cd ../..";
-      "...." = "cd ../../..";
 
       # Git aliases (previously from oh-my-zsh git plugin)
       gst = "git status";
@@ -124,6 +121,7 @@ in
       gd = "git diff";
       gds = "git diff --staged";
       gp = "git push";
+      gl = "git pull";
       gpl = "git pull";
       gf = "git fetch";
       glog = "git log --oneline --graph --decorate";
@@ -194,6 +192,9 @@ in
         # verbatim in case that was deliberate — switch to zsh if it wasn't.
         command -v fnox >/dev/null && eval "$(fnox activate bash)"
         command -v pitchfork >/dev/null && eval "$(pitchfork activate zsh)"
+
+        # Type a path to cd into it; also makes .., ../.., etc. work without cd
+        setopt AUTO_CD
 
         # History substring search — source then bind.
         source ${pkgs.zsh-history-substring-search}/share/zsh-history-substring-search/zsh-history-substring-search.zsh
