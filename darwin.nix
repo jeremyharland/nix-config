@@ -167,7 +167,7 @@
       "ghostty"
       "google-chrome"
       "intellij-idea"
-      "logitech-options+"
+      "logi-options+"
       "maccy"
       "orbstack" # Docker/K8s runtime — replaces Docker Desktop
       "notion"
