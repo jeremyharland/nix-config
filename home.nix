@@ -82,6 +82,10 @@ in
         src = pkgs.zsh-powerlevel10k;
         file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
       }
+      {
+        name = "zsh-history-substring-search";
+        src = pkgs.zsh-history-substring-search;
+      }
     ];
 
     history = {
@@ -102,6 +106,11 @@ in
       # Carried over from the old .zshrc
       vim = "nvim";
       pn = "pnpm";
+
+      # Directory traversal
+      ".." = "cd ..";
+      "..." = "cd ../..";
+      "...." = "cd ../../..";
 
       # Git aliases (previously from oh-my-zsh git plugin)
       gst = "git status";
@@ -185,6 +194,10 @@ in
         # verbatim in case that was deliberate — switch to zsh if it wasn't.
         command -v fnox >/dev/null && eval "$(fnox activate bash)"
         command -v pitchfork >/dev/null && eval "$(pitchfork activate zsh)"
+
+        # History substring search — bind up/down arrows after the plugin loads.
+        bindkey '^[[A' history-substring-search-up
+        bindkey '^[[B' history-substring-search-down
 
         # Load Powerlevel10k config. Run `p10k configure` to (re)generate ~/.p10k.zsh.
         [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
