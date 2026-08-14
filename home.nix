@@ -195,7 +195,8 @@ in
         command -v fnox >/dev/null && eval "$(fnox activate bash)"
         command -v pitchfork >/dev/null && eval "$(pitchfork activate zsh)"
 
-        # History substring search — bind up/down arrows after the plugin loads.
+        # History substring search — source then bind.
+        source ${pkgs.zsh-history-substring-search}/share/zsh-history-substring-search/zsh-history-substring-search.zsh
         bindkey '^[[A' history-substring-search-up
         bindkey '^[[B' history-substring-search-down
 
