@@ -103,6 +103,22 @@ in
       vim = "nvim";
       pn = "pnpm";
 
+      # Git aliases (previously from oh-my-zsh git plugin)
+      gst = "git status";
+      ga = "git add";
+      gaa = "git add --all";
+      gc = "git commit";
+      gcm = "git commit -m";
+      gco = "git checkout";
+      gcb = "git checkout -b";
+      gb = "git branch";
+      gd = "git diff";
+      gds = "git diff --staged";
+      gp = "git push";
+      gpl = "git pull";
+      gf = "git fetch";
+      glog = "git log --oneline --graph --decorate";
+
       # Rebuild the whole machine after editing this repo
       rebuild = "sudo darwin-rebuild switch --flake ~/nix-config";
       # Update all flake inputs (nixpkgs, home-manager, nix-darwin)

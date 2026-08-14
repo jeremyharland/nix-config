@@ -167,6 +167,7 @@
       "ghostty"
       "google-chrome"
       "intellij-idea"
+      "logitech-options"
       "maccy"
       "orbstack" # Docker/K8s runtime — replaces Docker Desktop
       "notion"
@@ -204,8 +205,6 @@
       FXPreferredViewStyle = "Nlsv"; # list view
       ShowPathbar = true;
       ShowStatusBar = true;
-      FXICloudDriveDesktop = false;
-      FXICloudDriveDocuments = false;
       ShowExternalHardDrivesOnDesktop = true;
       ShowRemovableMediaOnDesktop = true;
     };
@@ -219,17 +218,9 @@
       NSAutomaticSpellingCorrectionEnabled = false;
       "com.apple.swipescrolldirection" = false; # natural scroll off
       AppleICUForce24HourTime = true;
-      AppleMiniaturizeOnDoubleClick = false;
-      "com.apple.trackpad.forceClick" = true;
-      "com.apple.trackpad.scaling" = 1.5;
-      "com.apple.springing.enabled" = true;
-      "com.apple.springing.delay" = 0.5;
     };
 
-    trackpad = {
-      Clicking = true;
-      TrackpadRightClick = true;
-    };
+    trackpad.Clicking = true;
 
     menuExtraClock = {
       IsAnalog = true;
