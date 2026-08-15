@@ -3,6 +3,13 @@ let
   # Polls macOS appearance and flips the catppuccin flavor live so tmux
   # keeps following light/dark after startup (a plain if-shell only picks
   # the flavor once, at tmux start).
+  #
+  # catppuccin's own option defaults are `set -og` (only-if-unset), so once
+  # a module color/status string is baked from the first flavor it loaded
+  # under, simply re-running the plugin script does NOT recompute it for a
+  # new flavor -- status bar stays lit for whichever flavor came first. So
+  # every @catppuccin_* global is unset before re-running the plugin, forcing
+  # it to rebuild the whole option tree from scratch for the new flavor.
   systemThemeWatcher = pkgs.writeShellScript "tmux-system-theme-watcher" ''
     last=""
     while true; do
@@ -12,6 +19,9 @@ let
         current="latte"
       fi
       if [ "$current" != "$last" ]; then
+        ${pkgs.tmux}/bin/tmux show-options -g | awk '/^@(catppuccin|thm|batt|cpu)_/{print $1}' | while read -r opt; do
+          ${pkgs.tmux}/bin/tmux set-option -gu "$opt"
+        done
         ${pkgs.tmux}/bin/tmux set-option -g @catppuccin_flavor "$current"
         ${pkgs.tmux}/bin/tmux run-shell "${pkgs.tmuxPlugins.catppuccin.rtp}"
         last="$current"
