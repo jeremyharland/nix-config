@@ -25,7 +25,10 @@ in
   };
 
   home.file = {
-    "superwhisper" = mkHomeFile "superwhisper";
+    # Leaf-level only: ~/superwhisper also holds models/ and recordings/,
+    # real untracked data that a whole-directory symlink would shadow.
+    "superwhisper/settings/settings.json" = mkHomeFile "superwhisper/settings/settings.json";
+    "superwhisper/modes/default.json" = mkHomeFile "superwhisper/modes/default.json";
     ".ssh/config" = mkHomeFile "ssh/config";
   };
 }
