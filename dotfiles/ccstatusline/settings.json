@@ -1,0 +1,83 @@
+{
+  "version": 3,
+  "lines": [
+    [
+      {
+        "id": "1",
+        "type": "model",
+        "color": "cyan"
+      },
+      {
+        "id": "3",
+        "type": "context-length",
+        "color": "brightBlack"
+      },
+      {
+        "id": "5",
+        "type": "git-branch",
+        "color": "magenta"
+      },
+      {
+        "id": "7",
+        "type": "git-changes",
+        "color": "yellow"
+      }
+    ],
+    [
+      {
+        "id": "44389939-9675-424f-96ab-347e2fed6d39",
+        "type": "tokens-input",
+        "backgroundColor": "bgBrightMagenta"
+      },
+      {
+        "id": "0a2071df-0612-4d33-9821-40c89811f0fd",
+        "type": "tokens-output",
+        "backgroundColor": "bgBrightCyan"
+      },
+      {
+        "id": "262a13f8-77ef-4552-a2f8-204f547d5f4d",
+        "type": "tokens-total",
+        "backgroundColor": "bgWhite"
+      }
+    ],
+    [
+      {
+        "id": "cc8f1a96-e432-47ae-b414-ae018606e545",
+        "type": "session-usage",
+        "backgroundColor": "bgBlue"
+      },
+      {
+        "id": "05cc4faa-0132-4ba4-b9e0-3ed6a1b26852",
+        "type": "session-cost",
+        "backgroundColor": "bgYellow"
+      }
+    ]
+  ],
+  "flexMode": "full-minus-40",
+  "compactThreshold": 60,
+  "colorLevel": 2,
+  "defaultPadding": " ",
+  "defaultPaddingSide": "both",
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "gitCacheTtlSeconds": 5,
+  "minimalistMode": false,
+  "powerline": {
+    "enabled": true,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "theme": "nord-aurora",
+    "autoAlign": false,
+    "continueThemeAcrossLines": false
+  },
+  "installation": {
+    "method": "pinned",
+    "installedVersion": "2.2.27"
+  }
+}

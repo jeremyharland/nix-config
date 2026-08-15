@@ -23,6 +23,15 @@ in
     # in home/shell.nix has no `settings`, so home-manager never wrote this
     # path). Adopted here so it's reproducible like everything else.
     "starship.toml" = mkHomeFile "starship.toml";
+    # Declares the "npm:ccstatusline" mise tool (installs the binary the
+    # Claude Code statusLine command below shells out to) plus node/erlang.
+    "mise/config.toml" = mkHomeFile "mise/config.toml";
+    # ccstatusline's own segment/layout config, edited via its interactive
+    # TUI (`ccstatusline`) -- static once set, unlike ~/.claude/settings.json
+    # (deliberately left untracked: Claude Code rewrites that one itself at
+    # runtime -- autoMode scans, plugin toggles, theme -- so symlinking it
+    # into the repo would just be permanent uncommitted diff churn).
+    "ccstatusline/settings.json" = mkHomeFile "ccstatusline/settings.json";
   };
 
   home.file = {
