@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 let
   # Out-of-store symlinks point straight at the cloned repo instead of a
   # /nix/store path, so editing a tracked file takes effect immediately —
@@ -8,16 +8,13 @@ let
   mkHomeFile = repoRel: { source = mkSource repoRel; };
 in
 {
-  # dotfiles/nvim is a vendored config (NvChad-based); this just makes sure
-  # the nvim binary itself is installed and the default editor.
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
-    withRuby = false;
-    withPython3 = false;
-  };
+  # dotfiles/nvim is a vendored config (NvChad-based) symlinked whole below.
+  # Deliberately NOT using programs.neovim: it writes its own generated
+  # .config/nvim/init.lua, which collides with the vendored directory
+  # symlink ("Error installing file '.config/nvim/init.lua' outside $HOME").
+  # Just the package, plus EDITOR (home/shell.nix already aliases vim=nvim).
+  home.packages = [ pkgs.neovim ];
+  home.sessionVariables.EDITOR = "nvim";
 
   xdg.configFile = {
     "nvim" = mkHomeFile "nvim";
