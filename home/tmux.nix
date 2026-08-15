@@ -1,4 +1,25 @@
 { pkgs, ... }:
+let
+  # Polls macOS appearance and flips the catppuccin flavor live so tmux
+  # keeps following light/dark after startup (a plain if-shell only picks
+  # the flavor once, at tmux start).
+  systemThemeWatcher = pkgs.writeShellScript "tmux-system-theme-watcher" ''
+    last=""
+    while true; do
+      if [ "$(/usr/bin/defaults read -g AppleInterfaceStyle 2>/dev/null)" = "Dark" ]; then
+        current="mocha"
+      else
+        current="latte"
+      fi
+      if [ "$current" != "$last" ]; then
+        ${pkgs.tmux}/bin/tmux set-option -g @catppuccin_flavor "$current"
+        ${pkgs.tmux}/bin/tmux run-shell "${pkgs.tmuxPlugins.catppuccin.rtp}"
+        last="$current"
+      fi
+      sleep 5
+    done
+  '';
+in
 {
   # Replaces the old hand-written tmux.conf + TPM checkout (which was three
   # orphaned git submodule gitlinks with no .gitmodules — plugins only ever
@@ -31,7 +52,11 @@
         # before the plugin loads.
         plugin = catppuccin;
         extraConfig = ''
-          set -g @catppuccin_flavor "mocha"
+          # Match macOS light/dark appearance at startup; systemThemeWatcher
+          # (below) keeps it in sync afterward.
+          if-shell '[ "$(/usr/bin/defaults read -g AppleInterfaceStyle 2>/dev/null)" = "Dark" ]' \
+            'set -g @catppuccin_flavor "mocha"' \
+            'set -g @catppuccin_flavor "latte"'
         '';
       }
     ];
@@ -68,6 +93,8 @@
 
       bind '"' split-window -v -c "#{pane_current_path}"
       bind % split-window -h -c "#{pane_current_path}"
+
+      run-shell -b "${systemThemeWatcher}"
     '';
   };
 }
