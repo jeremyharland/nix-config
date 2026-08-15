@@ -34,7 +34,7 @@ fi
 
 # Nix (official/classic installer). If a machine ever uses the Determinate
 # installer instead, see the Gotchas section below before first activation.
-sh <(curl -L https://nixos.org/nix/install)
+curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh
 ```
 
 Restart the terminal after this so `nix` is on `PATH`.
