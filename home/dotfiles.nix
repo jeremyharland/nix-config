@@ -19,6 +19,10 @@ in
   xdg.configFile = {
     "nvim" = mkHomeFile "nvim";
     "ghostty" = mkHomeFile "ghostty";
+    # Pre-migration file, previously untracked and unmanaged (programs.starship
+    # in home/shell.nix has no `settings`, so home-manager never wrote this
+    # path). Adopted here so it's reproducible like everything else.
+    "starship.toml" = mkHomeFile "starship.toml";
   };
 
   home.file = {
