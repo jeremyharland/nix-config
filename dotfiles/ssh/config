@@ -1,0 +1,28 @@
+# Added by OrbStack: 'orb' SSH host for Linux machines
+# This only works if it's at the top of ssh_config (before any Host blocks).
+# This won't be added again if you remove it.
+Include ~/.orbstack/ssh/config
+
+# Machine-specific hosts (public IPs, personal/student IDs) live outside
+# this repo since it's public. Create ~/.ssh/config.local on each machine
+# with entries like:
+#
+#   Host myserver
+#     HostName 203.0.113.5
+#     User someone
+Include ~/.ssh/config.local
+
+Host pi
+  HostName 192.168.10.217
+  User jeznado
+
+Host pinas
+  HostName 192.168.10.237
+  User jeremy
+
+Host supreme
+  HostName 192.168.10.83
+  User jeremy
+
+Host *
+  IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"

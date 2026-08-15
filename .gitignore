@@ -2,11 +2,3 @@
 result
 result-*
 .direnv/
-
-# Never commit real secrets. ~/.secrets is sourced by .zshrc and stays
-# outside this repo entirely.
-.secrets
-*.key
-*.pem
-id_rsa*
-id_ed25519*

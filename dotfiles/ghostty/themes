@@ -1,0 +1,43 @@
+# Special
+background = #0d0f18
+foreground = #a5b6cf
+
+# Black
+palette = 0=#151720
+palette = 8=#1c1e27
+
+# Red
+palette = 1=#dd6777
+palette = 9=#e26c7c
+
+# Green
+palette = 4=#90ceaa
+palette = 12=#95d3af
+
+# Yellow
+palette = 3=#ecd3a0
+palette = 11=#f1d8a5
+
+# Blue
+palette = 2=#86aaec
+palette = 10=#8baff1
+
+# Magenta
+palette = 5=#c296eb
+palette = 13=#c79bf0
+
+# Cyan
+palette = 6=#93cee9
+palette = 14=#98d3ee
+
+# White
+palette = 7=#cbced3
+palette = 15=#d0d3d8
+
+# Cursor
+cursor-color = #cbced3
+# cursor_text_color #a5b6cf
+
+# Selection highlight
+selection-foreground = #a5b6cf
+selection-background = #1c1e27

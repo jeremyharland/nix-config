@@ -1,0 +1,23 @@
+{
+  "favoriteModelIDs" : [
+    "vad-v2",
+    "seg-v1",
+    "speakerkit-coreml",
+    "emb-v1",
+    "nvidia_parakeet-v3_494MB",
+    "canary-1b-v2_474MB"
+  ],
+  "modeKeys" : [
+
+  ],
+  "replacements" : [
+    {
+      "id" : "89CF30C5-9157-4D40-B12A-D565A37993D8",
+      "original" : "super whisper",
+      "with" : "Superwhisper"
+    }
+  ],
+  "vocabulary" : [
+    "Superwhisper"
+  ]
+}

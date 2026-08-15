@@ -1,5 +1,5 @@
 {
-  description = "Darwin + home-manager config";
+  description = "jeremy's system configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -10,41 +10,36 @@
     };
 
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Determinate's own nix-darwin module. Setting `determinateNix.enable`
-    # (see darwin.nix) turns off nix-darwin's built-in Nix management, which
-    # is what stops the two fighting over the daemon and /etc/nix/nix.conf.
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, determinate, ... }:
+  outputs =
+    { self, nixpkgs, nix-darwin, home-manager, nix-homebrew, ... }@inputs:
     let
-      username = "jeremyharland";
-      system = "aarch64-darwin"; # "x86_64-darwin" on Intel
+      username = "jeremy";
+      system = "aarch64-darwin";
 
       mkHost = hostname: nix-darwin.lib.darwinSystem {
         inherit system;
-        specialArgs = { inherit username hostname; };
+        specialArgs = { inherit inputs self username hostname; };
 
         modules = [
-          determinate.darwinModules.default
-          ./darwin.nix
-
+          ./darwin
+          nix-homebrew.darwinModules.nix-homebrew
           home-manager.darwinModules.home-manager
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              extraSpecialArgs = { inherit username; };
-              users.${username} = import ./home.nix;
+              extraSpecialArgs = { inherit inputs self username; };
+              users.${username} = import ./home;
 
-              # Rather than aborting when a pre-Nix dotfile is in the way,
-              # move it aside to <name>.hm-backup. Without this the first
-              # activation fails on every hand-written file it wants to own
-              # (.zprofile, .config/git/ignore, ...) one error at a time.
+              # Move pre-existing dotfiles aside instead of aborting activation
+              # on the first switch.
               backupFileExtension = "hm-backup";
             };
           }
@@ -52,20 +47,13 @@
       };
     in
     {
-      # `darwin-rebuild switch --flake ~/nix-config` selects the entry whose name
-      # matches `scutil --get LocalHostName`. Every machine that should build
-      # this config just needs its LocalHostName listed here — they all get the
-      # identical configuration, so adding one is a one-line change.
-      #
-      # If a host is missing you get:
-      #   error: flake ... does not provide attribute
-      #          'darwinConfigurations.<name>.system'
+      # `darwin-rebuild switch --flake ~/.config/nix-config` selects the entry
+      # whose name matches `scutil --get LocalHostName`. Adding a machine is a
+      # one-line change here — see darwin/default.nix for what stays in sync.
       darwinConfigurations = nixpkgs.lib.genAttrs [
-        "Jeremys-MacBook-Pro-2" # old machine, being migrated away from
-        "Jeremys-MacBook-Pro-3" # new machine (macOS assigned this name itself)
+        "Jeremys-MacBook-Pro" # scutil --get LocalHostName on this machine
       ] mkHost;
 
-      # Convenience so `nix fmt` and `nix flake check` behave
       formatter.${system} = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
     };
 }
