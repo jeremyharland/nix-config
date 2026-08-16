@@ -90,6 +90,9 @@
       # Skip compinit's compaudit security scan unless the dump is >24h
       # old, dropping compinit from ~600ms to ~20ms on every other start.
       (lib.mkOrder 600 ''
+        # Case-insensitive completion, e.g. `cd doc<TAB>` matches `Documents`.
+        zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
         autoload -Uz compinit
         zcd="''${ZDOTDIR:-$HOME}/.zcompdump"
         if [[ -n "$zcd"(#qN.mh+24) ]]; then
