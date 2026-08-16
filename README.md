@@ -71,7 +71,16 @@ chmod 600 ~/.ssh/config.local
 `flake.nix`'s `darwinConfigurations` list must contain this Mac's
 `scutil --get LocalHostName`. Add it if it isn't already there.
 
-**5. First activation**
+**5. Move current bashrc and zshrc**
+
+create a backup of bashrc and zshrc
+
+```sh
+mv /etc/bashrc /etc/bashrc.bak
+mv /etc/zshrc /etc/zshrc.bak
+```
+
+**6. First activation**
 
 `darwin-rebuild` doesn't exist yet on a fresh machine, so the first switch
 runs through `nix run`. home-manager's `backupFileExtension = "hm-backup"`
@@ -79,14 +88,14 @@ means it moves pre-existing dotfiles aside (`<name>.hm-backup`) instead of
 aborting activation.
 
 ```sh
-sudo nix run nix-darwin -- switch --flake ~/.config/nix-config
+sudo nix run nix-darwin --extra-experimental-features 'nix-command flakes' -- switch --flake ~/.config/nix-config
 ```
 
 This installs Homebrew itself, all casks/MAS apps, home-manager's zsh +
 starship + tmux + dotfile symlinks, and macOS defaults. Takes a while the
 first time.
 
-**6. Subsequent changes**
+**7. Subsequent changes**
 
 ```sh
 darwin-rebuild switch --flake ~/.config/nix-config
