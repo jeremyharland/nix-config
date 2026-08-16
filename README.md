@@ -7,9 +7,14 @@ managed as a flake. Structure modeled on [bgub/nix](https://github.com/bgub/nix)
 
 - `flake.nix` — inputs and `darwinConfigurations`, keyed by machine hostname
   (`scutil --get LocalHostName`) so `darwin-rebuild switch --flake .` picks
-  the right host automatically, no `#attr` needed.
-- `darwin/` — system-level config: Nix settings, Homebrew, macOS defaults,
-  per-app `defaults` preferences.
+  the right host automatically, no `#attr` needed. Each entry also points at
+  a `hosts/*.nix` module for that machine's own config.
+- `darwin/` — system-level config shared by every host: Nix settings, common
+  Homebrew casks, macOS defaults, per-app `defaults` preferences.
+- `hosts/` — per-machine overrides layered on top of `darwin/`. Currently
+  just extra `homebrew.casks`/`masApps` (list-typed options merge across
+  modules, so a host file adds to the common list rather than replacing
+  it) — `personal.nix` for this Mac, `work.nix` for the work laptop.
 - `home/` — home-manager: shell, git, tmux, packages.
 - `dotfiles/` — raw config files (nvim, ghostty, superwhisper, ssh) that
   home-manager symlinks into place via `home/dotfiles.nix`, using
@@ -68,8 +73,13 @@ chmod 600 ~/.ssh/config.local
 
 **4. Add the machine's hostname**
 
-`flake.nix`'s `darwinConfigurations` list must contain this Mac's
-`scutil --get LocalHostName`. Add it if it isn't already there.
+`flake.nix`'s `darwinConfigurations` attrset must contain this Mac's
+`scutil --get LocalHostName` as a key. If this is a new machine (not the
+personal MacBook or the work laptop already listed), add an entry pointing
+at a new or existing `hosts/*.nix` file. For the work laptop specifically,
+just update the placeholder hostname already in `flake.nix` to match
+`scutil --get LocalHostName` and fill in `hosts/work.nix` with whatever
+casks that machine needs.
 
 **5. Move current bashrc and zshrc**
 
@@ -105,10 +115,14 @@ rebuild
 
 ## Gotchas
 
-- **Hostname-keyed, not a fixed name.** `flake.nix` generates
-  `darwinConfigurations` from a list of `LocalHostName`s — no per-machine
-  username/hostname edit needed beyond adding that one line. `username` is
+- **Hostname-keyed, not a fixed name.** `flake.nix`'s `darwinConfigurations`
+  is keyed by `LocalHostName`, each entry pointing at a `hosts/*.nix`
+  module — no per-machine username edit needed beyond that. `username` is
   still a single `let` binding in `flake.nix` if it ever needs to change.
+- **Homebrew casks are common + per-host.** `darwin/homebrew.nix` holds the
+  cask list shared by every machine; `hosts/*.nix` adds machine-specific
+  casks on top (nix-darwin's `homebrew.casks` is list-typed, so definitions
+  across modules concatenate rather than override).
 - **Determinate-installed machines.** The classic installer (step 1) lets
   nix-darwin own `/etc/nix/nix.conf` (see `darwin/default.nix`). If a
   machine instead uses the Determinate installer, first activation fails

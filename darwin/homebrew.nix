@@ -15,20 +15,19 @@
 
     taps = [ ];
 
+    # Common to every host. Machine-specific extras live in hosts/*.nix —
+    # homebrew.casks is a list-typed option, so per-host modules append to
+    # this rather than replacing it.
     casks = [
       "1password"
       "bruno"
       "caffeine"
-      "calibre"
       "chromium"
       "dbeaver-community"
       "discord"
       "figma"
-      "firefox@developer-edition"
       "ghostty"
       "google-chrome"
-      "intellij-idea"
-      "jellyfin-media-player"
       "keybase"
       "logi-options+"
       "maccy"
@@ -36,23 +35,17 @@
       "notion"
       "orbstack"
       "rectangle"
-      "signal"
       "slack"
       "spotify"
-      "stats"
-      "steam"
       "superwhisper"
+      "stats"
       "tailscale-app"
-      "tor-browser"
       "visual-studio-code"
       "vlc"
-      "webtorrent"
     ];
 
     brews = [ ];
 
-    masApps = {
-      "Xcode" = 497799835;
-    };
+    masApps = { };
   };
 }

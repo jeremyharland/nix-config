@@ -20,7 +20,8 @@
   system.primaryUser = username;
 
   # hostName drives LocalHostName, which darwin-rebuild matches against to
-  # pick a darwinConfigurations entry — keep in sync with flake.nix's list.
+  # pick a darwinConfigurations entry — keep in sync with flake.nix's
+  # darwinConfigurations attrset (and its hosts/*.nix module).
   networking.hostName = hostname;
 
   users.users.${username} = {
