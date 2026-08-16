@@ -58,5 +58,11 @@
       NSAutomaticCapitalizationEnabled = true;
       NSAutomaticPeriodSubstitutionEnabled = true;
     };
+
+    # Spotlight keeps its own menu-bar-visibility key outside the
+    # controlcenter domain (and nix-darwin has no typed option for it).
+    CustomUserPreferences."com.apple.Spotlight" = {
+      MenuItemHidden = true;
+    };
   };
 }
