@@ -16,6 +16,8 @@
     taps = [ ];
 
     casks = [
+      "1password"
+      "bruno"
       "caffeine"
       "calibre"
       "chromium"
@@ -30,6 +32,7 @@
       "keybase"
       "logi-options+"
       "maccy"
+      "mpv"
       "notion"
       "orbstack"
       "rectangle"

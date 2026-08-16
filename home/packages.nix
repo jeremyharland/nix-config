@@ -2,7 +2,6 @@
 {
   home.packages = with pkgs; [
     bat
-    bruno
     claude-code
     fzf
     htop
@@ -13,8 +12,6 @@
     ripgrep
     zoxide
     _1password-cli
-    _1password-gui
-    mpv
     fastfetch
     speedtest-cli
     wget
