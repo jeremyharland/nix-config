@@ -41,6 +41,7 @@
       gcmsg = "git commit -m";
       gco = "git checkout";
       gcb = "git checkout -b";
+      gcl = "git clone";
       gb = "git branch";
       gp = "git push";
       gpl = "git pull";
