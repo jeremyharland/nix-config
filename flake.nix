@@ -20,13 +20,14 @@
   outputs =
     { self, nixpkgs, nix-darwin, home-manager, nix-homebrew, ... }@inputs:
     let
-      username = "jeremy";
       system = "aarch64-darwin";
 
       # hostModule carries whatever's specific to one machine (extra
       # Homebrew casks, etc) — see hosts/*.nix. It's just another module,
-      # layered on top of the shared ./darwin config.
-      mkHost = hostname: hostModule: nix-darwin.lib.darwinSystem {
+      # layered on top of the shared ./darwin config. username is per-host
+      # too, since it's tied to the macOS account on that machine, not a
+      # fixed identity (eg. the work laptop logs in as "JeremyHarland").
+      mkHost = { hostname, username, hostModule }: nix-darwin.lib.darwinSystem {
         inherit system;
         specialArgs = { inherit inputs self username hostname; };
 
@@ -56,11 +57,19 @@
       # means adding an entry here pointing at a hosts/*.nix file — see
       # darwin/default.nix for what stays in sync.
       darwinConfigurations = {
-        "Jeremys-MacBook-Pro" = mkHost "Jeremys-MacBook-Pro" ./hosts/personal.nix;
+        "Jeremys-MacBook-Pro" = mkHost {
+          hostname = "Jeremys-MacBook-Pro";
+          username = "jeremy";
+          hostModule = ./hosts/personal.nix;
+        };
 
         # Update the hostname below to match `scutil --get LocalHostName`
         # once set on the actual machine.
-        "Jeremys-Work-Laptop" = mkHost "Jeremys-Work-Laptop" ./hosts/work.nix;
+        "Jeremys-Work-Laptop" = mkHost {
+          hostname = "Jeremys-Work-Laptop";
+          username = "JeremyHarland";
+          hostModule = ./hosts/work.nix;
+        };
       };
 
       formatter.${system} = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
