@@ -66,7 +66,7 @@
         # Update the hostname below to match `scutil --get LocalHostName`
         # once set on the actual machine.
         "Jeremys-Work-Laptop" = mkHost {
-          hostname = "Jeremys-Work-Laptop";
+          hostname = "Jeremys-Work-MacBook-Pro";
           username = "JeremyHarland";
           hostModule = ./hosts/work.nix;
         };
