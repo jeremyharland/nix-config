@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   # Casks/apps specific to the work laptop, on top of the common list in
   # darwin/homebrew.nix. Starting empty — fill in with whatever this
@@ -6,4 +6,10 @@
   homebrew.casks = [
     "intellij-idea"
   ];
+
+  home-manager.users.jeremyharland = {
+    home.packages = with pkgs; [
+      gmp
+    ];
+  };
 }
