@@ -76,7 +76,7 @@
           username = "jeremyharland";
           gitUser = {
             name = "Jeremy Harland";
-            email = "REPLACE_ME@work-email.example";
+            email = "jeremy@getmosh.com";
           };
           hostModule = ./hosts/work.nix;
         };
