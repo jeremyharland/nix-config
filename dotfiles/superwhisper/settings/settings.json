@@ -5,7 +5,8 @@
     "speakerkit-coreml",
     "emb-v1",
     "nvidia_parakeet-v3_494MB",
-    "canary-1b-v2_474MB"
+    "canary-1b-v2_474MB",
+    "small.en"
   ],
   "modeKeys" : [
 
