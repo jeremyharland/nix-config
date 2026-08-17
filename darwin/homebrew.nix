@@ -25,6 +25,7 @@
       "chromium"
       "dbeaver-community"
       "discord"
+      "fluidvoice"
       "figma"
       "firefox@developer-edition"
       "ghostty"
