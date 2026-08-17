@@ -3,6 +3,7 @@
   imports = [
     ./packages.nix
     ./git.nix
+    ./mpv.nix
     ./shell.nix
     ./tmux.nix
     ./dotfiles.nix

@@ -33,7 +33,6 @@
       "keybase"
       "logi-options+"
       "maccy"
-      "mpv"
       "notion"
       "orbstack"
       "rectangle"
