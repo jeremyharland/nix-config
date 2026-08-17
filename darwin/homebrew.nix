@@ -26,6 +26,7 @@
       "dbeaver-community"
       "discord"
       "figma"
+      "firefox@developer-edition"
       "ghostty"
       "google-chrome"
       "keybase"
@@ -46,6 +47,8 @@
 
     brews = [ ];
 
-    masApps = { };
+    masApps = { 
+      "Xcode" = 497799835;
+    };
   };
 }

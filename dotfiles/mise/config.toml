@@ -2,7 +2,6 @@
 erlang = "29"
 node = "22"
 "npm:ccstatusline" = "latest"
-zoxide = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["node"]
