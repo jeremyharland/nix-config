@@ -34,7 +34,7 @@
       appFolderDirectory = "/Users/${username}";
       # hotkeys captured as-is from `defaults read com.superduper.superwhisper`
       KeyboardShortcuts_pushToTalk = ''{"carbonKeyCode":49,"carbonModifiers":2048,"mouseButtonNumbers":[]}'';
-      KeyboardShortcuts_toggleRecording = ''{"carbonKeyCode":54,"mouseButtonNumbers":[],"carbonModifiers":256}'';
+      KeyboardShortcuts_toggleRecording = ''{"carbonKeyCode":-1,"carbonModifiers":0,"mouseButtonNumbers":[2]}'';
     };
 
     "org.p0deje.Maccy" = {
