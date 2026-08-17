@@ -113,9 +113,7 @@
         bindkey "^[[A" up-line-or-beginning-search
         bindkey "^[[B" down-line-or-beginning-search
 
-        command -v fzf    >/dev/null && eval "$(fzf --zsh)"
-        command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
-        command -v mise   >/dev/null && eval "$(mise activate zsh)"
+        command -v mise >/dev/null && eval "$(mise activate zsh)"
       '')
     ];
   };
@@ -125,10 +123,16 @@
     enableZshIntegration = true;
   };
 
-  # fzf/zoxide/mise are initialized by hand in initContent above (mkOrder
-  # 1000) rather than via programs.fzf/programs.zoxide, so they stay plain
-  # packages (home/packages.nix) instead of home-manager modules — using
-  # both would double-init them.
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
