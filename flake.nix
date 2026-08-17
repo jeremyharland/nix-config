@@ -24,10 +24,12 @@
 
       # hostModule carries whatever's specific to one machine (extra
       # Homebrew casks, etc) — see hosts/*.nix. It's just another module,
-      # layered on top of the shared ./darwin config. username is per-host
-      # too, since it's tied to the macOS account on that machine, not a
-      # fixed identity (eg. the work laptop logs in as "JeremyHarland").
-      mkHost = { hostname, username, hostModule }: nix-darwin.lib.darwinSystem {
+      # layered on top of the shared ./darwin config. username and gitUser
+      # are per-host too: username is tied to the macOS account on that
+      # machine (eg. the work laptop logs in as "jeremyharland"), and
+      # gitUser lets the work laptop commit under a work identity instead
+      # of the personal one.
+      mkHost = { hostname, username, gitUser, hostModule }: nix-darwin.lib.darwinSystem {
         inherit system;
         specialArgs = { inherit inputs self username hostname; };
 
@@ -40,7 +42,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              extraSpecialArgs = { inherit inputs self username; };
+              extraSpecialArgs = { inherit inputs self username gitUser; };
               users.${username} = import ./home;
 
               # Move pre-existing dotfiles aside instead of aborting activation
@@ -60,14 +62,22 @@
         "Jeremys-MacBook-Pro" = mkHost {
           hostname = "Jeremys-MacBook-Pro";
           username = "jeremy";
+          gitUser = {
+            name = "jeremy";
+            email = "jeremy.harland@gmail.com";
+          };
           hostModule = ./hosts/personal.nix;
         };
 
         # Update the hostname below to match `scutil --get LocalHostName`
-        # once set on the actual machine.
+        # once set on the actual machine. TODO: fill in the real work email.
         "Jeremys-Work-MacBook-Pro" = mkHost {
           hostname = "Jeremys-Work-MacBook-Pro";
           username = "jeremyharland";
+          gitUser = {
+            name = "Jeremy Harland";
+            email = "REPLACE_ME@work-email.example";
+          };
           hostModule = ./hosts/work.nix;
         };
       };
