@@ -7,4 +7,4 @@ python = "latest"
 ruby = "3.4.9"
 
 [settings]
-idiomatic_version_file_enable_tools = ["node"]
+idiomatic_version_file_enable_tools = ["node", "ruby"]
