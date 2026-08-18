@@ -31,9 +31,9 @@
       # machine (eg. the work laptop logs in as "jeremyharland"), and
       # gitUser lets the work laptop commit under a work identity instead
       # of the personal one.
-      mkHost = { hostname, username, gitUser, hostModule }: nix-darwin.lib.darwinSystem {
+      mkHost = { hostname, username, gitUser, hostModule, profile }: nix-darwin.lib.darwinSystem {
         inherit system;
-        specialArgs = { inherit inputs self username hostname; };
+        specialArgs = { inherit inputs self username hostname profile; };
 
         modules = [
           ./darwin
@@ -44,7 +44,9 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              extraSpecialArgs = { inherit inputs self username gitUser; };
+              # profile selects between per-machine dotfile variants (eg.
+              # dotfiles/mise/personal.toml vs work.toml) -- see home/dotfiles.nix.
+              extraSpecialArgs = { inherit inputs self username gitUser profile; };
               users.${username} = import ./home;
 
               # Move pre-existing dotfiles aside instead of aborting activation
@@ -69,6 +71,7 @@
             email = "jeremy.harland@gmail.com";
           };
           hostModule = ./hosts/personal.nix;
+          profile = "personal";
         };
 
         # Update the hostname below to match `scutil --get LocalHostName`
@@ -81,6 +84,7 @@
             email = "jeremy@getmosh.com";
           };
           hostModule = ./hosts/work.nix;
+          profile = "work";
         };
       };
 
