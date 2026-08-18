@@ -9,6 +9,7 @@
 
   home-manager.users.jeremyharland = {
     home.packages = with pkgs; [
+      copier
       gmp
     ];
   };
