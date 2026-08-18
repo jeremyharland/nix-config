@@ -1,8 +1,9 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   home.packages = with pkgs; [
     bat
     claude-code
+    opencode
     htop
     gh
     lazygit
@@ -15,5 +16,6 @@
     wget
     eza
     zsh-completions
+    inputs.meridian.packages.${pkgs.system}.meridian
   ];
 }

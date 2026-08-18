@@ -15,6 +15,8 @@
     };
 
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+
+    meridian.url = "github:rynfar/meridian";
   };
 
   outputs =
