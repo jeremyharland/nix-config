@@ -1,5 +1,4 @@
 [tools]
-erlang = "29"
 node = "22"
 "npm:ccstatusline" = "latest"
 
