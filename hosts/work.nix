@@ -7,9 +7,12 @@
     "intellij-idea"
   ];
 
+  homebrew.brews = [
+    "copier"
+  ];
+
   home-manager.users.jeremyharland = {
     home.packages = with pkgs; [
-      copier
       gmp
     ];
   };
