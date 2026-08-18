@@ -38,7 +38,6 @@
       "rectangle"
       "slack"
       "spotify"
-      "superwhisper"
       "stats"
       "tailscale-app"
       "visual-studio-code"

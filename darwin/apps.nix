@@ -21,22 +21,7 @@
   # (window frames, timestamps, version strings, telemetry IDs) is left out
   # since it regenerates itself and isn't something you'd want to "restore".
   #
-  # Superwhisper's actual config (modes, replacements/vocabulary) is a real
-  # dotfile — see dotfiles/superwhisper, symlinked via home/dotfiles.nix.
   system.defaults.CustomUserPreferences = {
-    "com.superduper.superwhisper" = {
-      launchOnLogin = true;
-      showApplicationInDock = false;
-      clipboardBehaviour = "bypass";
-      enableSoundEffects = true;
-      soundEffectTheme = "simple";
-      appTheme = "system";
-      appFolderDirectory = "/Users/${username}";
-      # hotkeys captured as-is from `defaults read com.superduper.superwhisper`
-      KeyboardShortcuts_pushToTalk = ''{"carbonKeyCode":49,"carbonModifiers":2048,"mouseButtonNumbers":[]}'';
-      KeyboardShortcuts_toggleRecording = ''{"carbonKeyCode":-1,"carbonModifiers":0,"mouseButtonNumbers":[2]}'';
-    };
-
     "org.p0deje.Maccy" = {
       showInStatusBar = false;
       SUEnableAutomaticChecks = false;
