@@ -8,7 +8,6 @@
   ];
 
   homebrew.brews = [
-    "copier"
   ];
 
   home-manager.users.jeremyharland = {
