@@ -1,5 +1,5 @@
 [tools]
-node = "22"
+node = "latest"
 "npm:ccstatusline" = "latest"
 
 [settings]
