@@ -68,6 +68,10 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
+    sessionVariables = {
+      BROWSER = "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox";
+    };
+
     # login-shell env, previously in loose ~/.zshenv / ~/.zprofile
     envExtra = ''
       # uv
